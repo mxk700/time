@@ -1,0 +1,45 @@
+Maket: 
+	https://wireframe.cc/xWXDdm
+
+
+User roles:
+	- observer
+	- user
+
+
+var timer = {
+	id: number,
+	time: 500,
+	tag: tag_id
+	left: miliseconds
+}
+
+
+var tag = {
+	id: number,
+	name: string,
+	summary: data time,
+	img: image,
+	background: image,
+	parent: tag_id,
+	details: [
+		{
+			timer: id,
+			started: data,
+			ended: data,
+			addMethod: bySite,
+			duration: data-time
+		},
+
+		{
+			timer: id,
+			started: data,
+			ended: data,
+			addMethod: byUser,
+			duration: data-time
+		},
+		.....
+	]
+	
+}
+
