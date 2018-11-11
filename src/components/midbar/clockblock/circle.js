@@ -8,11 +8,6 @@ class Circle extends Component {
       opts: Array(+this.props.sectors).fill({alfa:0, shiftX:0, shiftY:0}),
 
     };
-    console.log("constructor WORKS! State:");
-    console.dir(this.state);
-  }
-  getAngle(count){
-    return Math.round( 360/count );
   }
 
   render(){
@@ -46,6 +41,8 @@ class Circle extends Component {
 
     let opts  = [];
 
+this.calcSectorsGeometry(count, radius);
+
     for( let i = 0; i < count; i++){
       let alfa = arc * i;  // rotate angle
       let beta = 45 - Math.round(alfa / 2);   // angle between shift path(hypotenuse) and axisX
@@ -60,21 +57,40 @@ class Circle extends Component {
       opts.push({alfa, beta, shiftX, shiftY});
     }
 
-    console.dir(opts);
+    // console.dir(opts);
 
     this.setState((state, props) => ({
       opts: opts
     }), ()=>{
-      console.log(this.state);
+      // console.log(this.state);
     });
 
+  }
+
+  calcSectorsGeometry( count, r ){
+    const RAD = 0.01745329252;        // radians in 1 degree
+    const alfa = round(360 / count, 1);
+    const beta = round(45 - alfa/2, 1);
+    const bb = round( 2 * r * Math.sin( RAD * alfa  / 2 ), 3 );
+    const x = round( bb * Math.cos( RAD * beta), 3 );
+    const y = round( bb * Math.sin( RAD * beta), 3 );
+
+    console.log(this);
+    this.sectorGeometry = {r, x, y};
+
+    let res  = [];
+    for(let i=0; i<count; i++){
+      res.push( alfa*i );
+    }
+
+    console.log(res);
   }
 };
 
 class Sector extends Component {
   render(){
-    console.log("SECTOR RENDERS" + Date.now() );
-    console.log(this.props);
+    // console.log("SECTOR RENDERS" + Date.now() );
+    // console.log(this.props);
     var n = +this.props.number;
     var st = {
       transform: 'rotate('  + +this.props.alfa + 'deg)'+
@@ -87,6 +103,11 @@ class Sector extends Component {
       <div style={st}>{this.props.number}</div>
     )
   }
+}
+
+
+function round(x, depth){
+  return Math.round( x * Math.pow(10, depth) ) / Math.pow(10, depth);
 }
 
 
