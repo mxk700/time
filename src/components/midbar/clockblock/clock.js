@@ -3,10 +3,10 @@ import React, {Component} from 'react';
 class Clock extends Component {
   render(){
       return (
-        <div id="clock">
-
+        <div id="clockWrapper">
+          <div id="clock">
             its a clock
-
+          </div>
         </div>
       )
   }

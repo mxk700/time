@@ -1,114 +1,82 @@
 import React, {Component} from 'react';
+import Sector from './sector';
 
 class Circle extends Component {
   constructor(props){
     super(props);
     this.circle = React.createRef();
     this.state = {
-      opts: Array(+this.props.sectors).fill({alfa:0, shiftX:0, shiftY:0}),
-
+      angles: Array(+this.props.sectors).fill(0),
+      sector: { x:0, y:0, r:0},
+      maxHovered: 0
     };
+    this.handleHover = this.handleHover.bind(this);
+  }
+
+  handleHover(e){
+    console.log(e.target);
+    this.setState({maxHovered: e.target.attributes.n.value});
   }
 
   render(){
-    var t = Array(+this.props.sectors).join("+").split("+");
-
+    var x0 = this.state.sector.r;
     return (
       <div id="circleWrapper">
-        <div id="circle" ref={this.circle}>
-           { t.map( (e, i)=>
+        <svg id="circle" ref={this.circle}>
+           { this.state.angles.map( (e, i)=>
              <Sector
                key={i}
-               number={i}
-               alfa={ this.state.opts[i].alfa }
-               shiftX={ this.state.opts[i].shiftX }
-               shiftY={ this.state.opts[i].shiftY }
+               number={i+1}
+               onHover = {this.handleHover}
+               maxHovered = {this.state.maxHovered}
+               sector = { this.state.sector }
+               alfa={e}
               />
           )}
-        </div>
+          <circle cx={x0} cy={x0} r={x0/10} stroke="black" stroke-width="3" fill="red" />
+        </svg>
       </div>
     )
   }
 
   componentDidMount(){
-    const RAD = 0.01745329252;        // radians in 1 degree
     const count  = +this.props.sectors;
-    const side = Math.round( this.circle.current.offsetHeight / 2);
-    let radius = side * Math.sqrt(2);
-    radius = Math.round(radius/2);
-
-    const arc = Math.round(360 / count);
-
-    let opts  = [];
-
-this.calcSectorsGeometry(count, radius);
-
-    for( let i = 0; i < count; i++){
-      let alfa = arc * i;  // rotate angle
-      let beta = 45 - Math.round(alfa / 2);   // angle between shift path(hypotenuse) and axisX
-
-      let hypotenuse = 2 * radius * Math.sin( RAD * alfa / 2);
-      hypotenuse = Math.round(hypotenuse);
-
-      let shiftX = hypotenuse * Math.cos( RAD * beta );
-      let shiftY = hypotenuse * Math.sin( RAD * beta );
-      shiftX = Math.round(shiftX);
-      shiftY = Math.round(shiftY);
-      opts.push({alfa, beta, shiftX, shiftY});
-    }
-
-    // console.dir(opts);
+    const radius = round( this.circle.current.clientHeight / 2, 3);
+    const alfa   = this.getAlfa(count);
+    const angles = this.getAngles(count, alfa);
+    const sector = this.getSector(count, alfa, radius);
 
     this.setState((state, props) => ({
-      opts: opts
-    }), ()=>{
-      // console.log(this.state);
-    });
-
+      angles: angles,
+      sector: sector
+    }))
   }
 
-  calcSectorsGeometry( count, r ){
+  getAlfa(count){
+    return round(360 / count, 1);
+  }
+
+  getSector( count, alfa, r ){
     const RAD = 0.01745329252;        // radians in 1 degree
-    const alfa = round(360 / count, 1);
-    const beta = round(45 - alfa/2, 1);
-    const bb = round( 2 * r * Math.sin( RAD * alfa  / 2 ), 3 );
-    const x = round( bb * Math.cos( RAD * beta), 3 );
-    const y = round( bb * Math.sin( RAD * beta), 3 );
+    const halfAlfaRad  = RAD * alfa  / 2;
+    const bc = round( 2 * r * Math.sin( halfAlfaRad  ), 3 );
+    let x    = round( bc * Math.cos( halfAlfaRad ),     3 );
+    let y    = round( bc * Math.sin( halfAlfaRad ),     3 );
+    x += r;
+    return {r, x, y};
+  }
 
-    console.log(this);
-    this.sectorGeometry = {r, x, y};
-
-    let res  = [];
-    for(let i=0; i<count; i++){
-      res.push( alfa*i );
+  getAngles(count, alfa){
+    let angles  = [], i = 0;
+    while(count - i){
+      angles.push( alfa*i++ );
     }
-
-    console.log(res);
+    return angles;
   }
 };
-
-class Sector extends Component {
-  render(){
-    // console.log("SECTOR RENDERS" + Date.now() );
-    // console.log(this.props);
-    var n = +this.props.number;
-    var st = {
-      transform: 'rotate('  + +this.props.alfa + 'deg)'+
-                ' translate('+ +this.props.shiftX+'px, '+ +this.props.shiftY +'px )',
-      backgroundColor: "#" + n*2 + n*2 + n*2,
-      zIndex: n
-    }
-
-    return (
-      <div style={st}>{this.props.number}</div>
-    )
-  }
-}
-
 
 function round(x, depth){
   return Math.round( x * Math.pow(10, depth) ) / Math.pow(10, depth);
 }
-
 
 export default Circle;

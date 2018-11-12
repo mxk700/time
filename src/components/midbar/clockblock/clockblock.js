@@ -9,7 +9,7 @@ class ClockBlock extends Component {
       return (
         <div className="clockBlock">
 
-          <Circle sectors="5"/>
+          <Circle sectors="12"/>
           <Clock />
           <ClockNavs />
 
