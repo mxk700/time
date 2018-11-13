@@ -33,7 +33,7 @@ class Circle extends Component {
                alfa={e}
               />
           )}
-          <circle cx={x0} cy={x0} r={x0/10} stroke="black" stroke-width="3" fill="red" />
+          <circle cx={x0} cy={x0} r={x0/10} stroke="black" strokeWidth="3" fill="red" />
         </svg>
       </div>
     )
