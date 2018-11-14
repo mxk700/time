@@ -1,18 +1,17 @@
-//// TODO: dont go down 0:0:0
+//// TODO: exclude key up from irrelevant keys;
+//// TODO: add zero on blur;
 
 import React, {Component} from 'react';
 
 const CTRL_MULT = 5;
+const timeMin = new Date(0,0,0,0,0,0);
+const timeMax = new Date(0,0,0,23,59,59);
 
 class Clock extends Component {
   constructor(props){
     super(props);
     this.state = {
-      time: [
-        {val:"01", max:"23"},
-        {val:"00", max:"59"},
-        {val:"00", max:"59"}
-      ]
+      time: [ "01", "00", "00" ]
     };
     this.handleNewValue = this.handleNewValue.bind(this);
     this.addZero = this.addZero.bind(this);
@@ -27,10 +26,8 @@ class Clock extends Component {
               <Input
                 n={i}
                 key={i}
-                value={this.state.time[i].val}
-                max={this.state.time[i].max}
+                value={e}
                 onNewValue={this.handleNewValue}
-                onLostFocus={this.addZero}
               />
             )}
           </div>
@@ -39,57 +36,33 @@ class Clock extends Component {
       )
   }
 
-  handleNewValue( opts ){
-    let {n, val, add, blur=false} = opts;
+  handleNewValue( n, val, add ){
+    let [time] =  [this.state.time] ;
+    val && (time[n] = val);
+    add && (time[n] = +time[n] +add);
+    ( val === 0 && add === 0) && (time[n] = 0);
 
-    let nSib = NaN, addSib = null;
+    let newTime = new Date(0,0,0, +time[0], +time[1], +time[2]);
 
-    (val === "empty") && (val = this.state.time[n].val);
+    (newTime > timeMax) && (newTime = timeMax);
+    (newTime < timeMin) && (newTime = timeMin);
 
-    let newVal = +val + add;
-    const max = +this.state.time[n].max;
-    const snapShot = this.checkZeroTime();
+    time[0] = this.addZero( newTime.getHours() );
+    time[1] = this.addZero( newTime.getMinutes() );
+    time[2] = this.addZero( newTime.getSeconds() );
 
-    if( newVal > max ){
-      if(snapShot === '235959') return;
-      if(n === 0){
-        newVal = max;
-      }else{
-        newVal = 0;
-        nSib = n-1;
-        addSib = 1;
-      }
-    }else if( newVal < 0 ){
-      if(snapShot === '00000') return;
-      if(n === 0){
-        newVal = 0;
-      }else{
-        newVal = max;
-        nSib = n-1;
-        addSib = -1;
-      }
-    }
+    time[n] = this.removeZero(time[n]);
 
-    let t = this.state.time.slice();
-    t[n].val = newVal;
-    this.setState( {time:t} );
-
-    blur && this.addZero(n);
-
-    !(isNaN(nSib)) && this.handleNewValue({ n: nSib, val: "empty", add: addSib, blur:true });
+    this.setState( {time:time} );
   }
 
-  addZero(n){
-    let t = this.state.time.slice();
-    t[n].val = +t[n].val;
-    if( t[n].val > 9 ) return;
-
-    t[n].val = "0" + t[n].val;
-    this.setState( {time:t} );
+  addZero(val){
+    if(val < 10 ) return "0" + val;
+    return "" + val;
   }
-  checkZeroTime(){
-    const t = this.state.time;
-    return '' + t[0].val + t[1].val + t[2].val;
+
+  removeZero(val){
+    return '' + +val;
   }
 };
 
@@ -104,12 +77,12 @@ class Input extends Component {
     this.handleBlur   = this.handleBlur.bind(this);
     this.handleWheel  = this.handleWheel.bind(this);
     this.handleKeyUp  = this.handleKeyUp.bind(this);
-    this.state        = {value: this.props.value };
   }
 
   render(){
     return (
       <input
+        n         = {this.props.n}
         value     = {this.props.value}
         onBlur    = {this.handleBlur}
         onChange  = {this.handleChange}
@@ -121,25 +94,29 @@ class Input extends Component {
   }
 
   handleChange(e){
+    console.log( "handleChange ! " );
     const val = parseInt( e.target.value );
     if( isNaN(val) ) return;
 
-    this.props.onNewValue( {n: this.props.n, val:val, add:0} );
+    console.log("From input: val = " + val + "   n = " + this.props.n  );
+
+    this.props.onNewValue( this.props.n, val, 0 );
   }
   handleBlur(e){
-    this.props.onLostFocus(this.props.n)
+    // this.props.onLostFocus(this.props.n)
   }
   handleFocus(e){
     e.target.select();
   }
   handleWheel(e){
+    console.log(" handleWheel! ");
     e.preventDefault();
     let change = e.deltaY > 0 ? -1 : 1;
     e.ctrlKey && ( change *= CTRL_MULT );
-    this.props.onNewValue( {n: this.props.n, val:"empty", add: change} );
+    this.props.onNewValue( this.props.n, 0,  change );
   }
   handleKeyUp(e){
-    console.log(e.which);
+    console.log("handleKeyUp");
     let x = null;
     switch (e.which) {
       case 38:      // up
@@ -156,7 +133,8 @@ class Input extends Component {
         break;
       default:
     }
-    this.props.onNewValue( {n: this.props.n, val:"empty", add: x} );
+    // console.log([this.props.n, 0, x]);
+    this.props.onNewValue( this.props.n, 0,  x );
   }
 }
 
