@@ -19,7 +19,6 @@ class Circle extends Component {
   }
 
   render(){
-    var x0 = this.state.sector.r;
     return (
       <div id="circleWrapper">
         <svg id="circle" ref={this.circle}>
@@ -33,8 +32,8 @@ class Circle extends Component {
                alfa={e}
               />
           )}
-          <circle cx={x0} cy={x0} r={x0/10} stroke="black" strokeWidth="3" fill="red" />
         </svg>
+        <div className="circleButton"></div>
       </div>
     )
   }
