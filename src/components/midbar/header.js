@@ -3,8 +3,8 @@ import React, {Component} from 'react';
 class MidHeader extends Component {
   render(){
       return (
-        <div className="timerHeader">
-          <span>TIMER    </span>
+        <div>
+          <span>TIMER   </span>
           <span>tagname</span>
         </div>
       )
