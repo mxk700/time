@@ -54,6 +54,58 @@ h3 {
   border-radius: 50%;
 }
 
+#tagList {
+  position: relative;
+  text-align: left;
+}
+.tag {
+  margin: 2em;
+}
+#addTagButton {
+  border-radius: 25%;
+  height: 3em;
+  width: 6em;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+#addTagForm {
+  position: absolute;
+  width: 23em;
+  left: 100%;
+  padding: 1em 1em 0 1em;
+  border: solid blue 2px;
+  background-color: coral;
+  z-index: 500;
+  font-size: 1.5em;
+}
+#addTagForm.hide {
+  display: none;
+}
+
+#addTagForm h3 {
+  text-align:center;
+}
+#addTagForm label {
+  display: inline-block;
+  width: 4em;
+}
+#addTagForm input {
+  font-size: 1em;
+}
+#addTagForm br {
+  font-size: 1.5em;
+}
+#addTagFormControls {
+  display: flex;
+  justify-content: space-between;
+  margin: 1em 4em;
+  /* border: solid red 1px; */
+}
+#addTagFormControls button{
+  height: 3em;
+  width: 8em;
+}
 
 
 

@@ -6,16 +6,17 @@ class Tag extends Component{
     return (
       <div
         id={props.id}
-        className="tag"
+        className={"tag " + props.depth}
         parent={props.parent}
         depth={props.depth}
-        childNo={props.childNo}
+        childno={props.childNo}
         collapsed={props.collapsed}
+        hidden={props.hidden}
         picture={props.picture}
         sound={props.sound}
-        lastTerm={props.lastTerm}
+        lastterm={props.lastTerm}
       >
-        {props.tagVal}
+        {props.tagval}
       </div>
     )
   }
